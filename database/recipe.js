@@ -72,13 +72,25 @@ async function insertRecipe(body) {
 }
 
 async function updateRecipe(body) {
-  const sql = 'UPDATE recipe SET description = $1, cost = $2 WHERE recipe_id = $3';
+  let sql = 'UPDATE recipe SET description = $1, cost = $2 WHERE recipe_id = $3';
   
-  const args = [
+  let args = [
     body[0].description,
     body[0].cost,
     body[0].recipe_id
   ];
+
+  for (let i = 0; i < body[0].itens.length; i++) {
+    sql = 'UPDATE recipe_ingredient SET ingredient_id = $1, quantity = $2 WHERE recipe_id = $3';
+
+    args = [
+      body[0].itens[i].ingredient_id,
+      body[0].itens[i].quantity,
+      body[0].recipe_id,
+    ];
+
+    await databaseTransaction(sql, args);
+  };
 
   await databaseTransaction(sql, args);
 
