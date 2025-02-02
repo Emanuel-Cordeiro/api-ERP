@@ -17,7 +17,8 @@ async function selectIngredient(id) {
 }
 
 async function insertIngredient(ingredient) {
-  const sql =  'INSERT INTO ingredient (description, unity, cost, stock) VALUES ($1, $2, $3, $4)';
+  const sql =
+    'INSERT INTO ingredient (description, unity, cost, stock) VALUES ($1, $2, $3, $4)';
 
   const args = [
     ingredient[0].description,
@@ -32,14 +33,15 @@ async function insertIngredient(ingredient) {
 }
 
 async function updateIngredient(ingredient) {
-  const sql = 'UPDATE ingredient SET description = $1, unity = $2, cost = $3, stock = $4 WHERE ingredient_id = $5';
+  const sql =
+    'UPDATE ingredient SET description = $1, unity = $2, cost = $3, stock = $4 WHERE ingredient_id = $5';
 
   const args = [
     ingredient[0].description,
     ingredient[0].unity,
     ingredient[0].cost,
     ingredient[0].stock,
-    ingredient[0].ingredient_id
+    ingredient[0].ingredient_id,
   ];
 
   await databaseTransaction(sql, args);

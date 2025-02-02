@@ -1,6 +1,6 @@
 const express = require('express');
 
-const db = require('../database/product'); 
+const db = require('../database/product');
 
 const router = express.Router();
 
@@ -20,32 +20,38 @@ router.get('/', async (_, res) => {
 
     res.json(clientes);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar os produtos. Erro: ' + error });
+    res
+      .status(500)
+      .json({ error: 'Erro ao buscar os produtos. Erro: ' + error });
   }
 });
 
 router.post('/', async (req, res) => {
   try {
     if (!!req.body[0].product_id) {
-      await db.updateProduct(req.body)
+      await db.updateProduct(req.body);
     } else {
       await db.insertProduct(req.body);
     }
 
     res.sendStatus(201);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao inserir/alterar o produto. Erro: ' + error });
+    res
+      .status(500)
+      .json({ error: 'Erro ao inserir/alterar o produto. Erro: ' + error });
   }
 });
 
-router.delete('/:id', async (req,res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await db.deleteProduct(req.params.id)
+    await db.deleteProduct(req.params.id);
 
-    res.sendStatus(201)
+    res.sendStatus(201);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir o produto. Erro: ' + error });
+    res
+      .status(500)
+      .json({ error: 'Erro ao excluir o produto. Erro: ' + error });
   }
-})
+});
 
 module.exports = router;

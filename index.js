@@ -20,7 +20,7 @@ app.use(express.json());
 
 app.get('/Connection', (_, res) => {
   res.json({
-    message: 'Connected.'
+    message: 'Connected.',
   });
 });
 

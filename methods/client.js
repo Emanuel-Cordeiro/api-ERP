@@ -1,6 +1,6 @@
 const express = require('express');
 
-const db = require('../database/client'); 
+const db = require('../database/client');
 
 const router = express.Router();
 
@@ -20,31 +20,37 @@ router.get('/', async (_, res) => {
 
     res.json(clientes);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar os clientes. Erro: ' + error });
+    res
+      .status(500)
+      .json({ error: 'Erro ao buscar os clientes. Erro: ' + error });
   }
 });
 
 router.post('/', async (req, res) => {
   try {
     if (!!req.body.client_id) {
-      await db.updateCustomer(req.body)
+      await db.updateCustomer(req.body);
     } else {
       await db.insertCustomer(req.body);
     }
 
     res.sendStatus(201);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao incluir/alterar o cliente. Erro: ' + error });
+    res
+      .status(500)
+      .json({ error: 'Erro ao incluir/alterar o cliente. Erro: ' + error });
   }
 });
 
-router.delete('/:id', async (req,res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await db.deleteCustomer(req.params.id)
+    await db.deleteCustomer(req.params.id);
 
-    res.sendStatus(201)
+    res.sendStatus(201);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir o cliente. Erro: ' + error });
+    res
+      .status(500)
+      .json({ error: 'Erro ao excluir o cliente. Erro: ' + error });
   }
 });
 

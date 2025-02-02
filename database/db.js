@@ -15,7 +15,7 @@ async function connect() {
 }
 
 async function databaseTransaction(sql, args = []) {
-  const client = await connect(); 
+  const client = await connect();
 
   try {
     const res = await client.query(sql, args);
@@ -31,5 +31,5 @@ async function databaseTransaction(sql, args = []) {
 }
 
 module.exports = {
-  databaseTransaction
+  databaseTransaction,
 };
