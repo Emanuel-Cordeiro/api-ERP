@@ -30,7 +30,7 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    if (!!req.body[0].ingredient_id) {
+    if (!!req.body.id) {
       await db.updateIngredient(req.body);
     } else {
       await db.insertIngredient(req.body);
@@ -38,6 +38,7 @@ router.post('/', async (req, res) => {
 
     res.sendStatus(201);
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ error: 'Erro ao inserir/alterar o ingrediente. Erro: ' + error });

@@ -28,13 +28,17 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    let status = 200;
+
     if (!!req.body.client_id) {
       await db.updateCustomer(req.body);
     } else {
       await db.insertCustomer(req.body);
+
+      status = 201;
     }
 
-    res.sendStatus(201);
+    res.sendStatus(status);
   } catch (error) {
     res
       .status(500)
@@ -46,7 +50,7 @@ router.delete('/:id', async (req, res) => {
   try {
     await db.deleteCustomer(req.params.id);
 
-    res.sendStatus(201);
+    res.sendStatus(200);
   } catch (error) {
     res
       .status(500)

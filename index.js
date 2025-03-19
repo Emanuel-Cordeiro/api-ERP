@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 
+const cors = require('cors');
+
 const clientRoutes = require('./methods/client.js');
 
 const ingredientRoutes = require('./methods/ingredient.js');
@@ -17,6 +19,12 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+  })
+);
 
 app.get('/Connection', (_, res) => {
   res.json({

@@ -28,24 +28,24 @@ async function selectOrders() {
 }
 
 async function selectOrder(id) {
-  let sql =
-    'SELECT order_id, client_id, delivery_date, observation, paid FROM orders WHERE order_id = $1';
+  let sql = `SELECT o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid 
+    FROM orders o
+    LEFT JOIN client c on c.client_id = o.client_id
+    WHERE order_id = $1`;
 
   let result = await databaseTransaction(sql, [id]);
 
   let obj = result[0];
 
   sql =
-    'SELECT order_item_order, product_id, quantity, observation FROM order_item WHERE order_id = $1';
+    'SELECT order_item_order, product_id, quantity, price, observation FROM order_item WHERE order_id = $1';
 
   itens = await databaseTransaction(sql, [id]);
 
-  obj = [
-    {
-      ...obj,
-      itens,
-    },
-  ];
+  obj = {
+    ...obj,
+    itens,
+  };
 
   return obj;
 }

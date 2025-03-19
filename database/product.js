@@ -2,7 +2,7 @@ const { databaseTransaction } = require('./db');
 
 async function selectProducts() {
   const sql =
-    'SELECT product_id, description, price, unity, stock, cost FROM product';
+    'SELECT product_id as id, description, price, unity, stock, cost FROM product ORDER BY product_id';
 
   const result = await databaseTransaction(sql);
 
@@ -11,7 +11,7 @@ async function selectProducts() {
 
 async function selectProduct(id) {
   const sql =
-    'SELECT product_id, description, price, unity, stock, cost FROM product WHERE product_id = $1';
+    'SELECT product_id as id, description, price, unity, stock, cost FROM product WHERE product_id = $1';
 
   const result = await databaseTransaction(sql, [id]);
 
@@ -23,11 +23,11 @@ async function insertProduct(body) {
     'INSERT INTO product (description, price, unity, stock, cost) VALUES ($1, $2, $3, $4, $5)';
 
   const args = [
-    body[0].description,
-    body[0].price,
-    body[0].unity,
-    body[0].stock,
-    body[0].cost,
+    body.description,
+    body.price,
+    body.unity,
+    body.stock,
+    body.cost,
   ];
 
   databaseTransaction(sql, args);
@@ -40,12 +40,12 @@ async function updateProduct(body) {
     'UPDATE product SET description = $1, cost = $2, price = $3, unity = $4, stock = $5 WHERE product_id = $6';
 
   const args = [
-    body[0].description,
-    body[0].cost,
-    body[0].price,
-    body[0].unity,
-    body[0].stock,
-    body[0].product_id,
+    body.description,
+    body.cost,
+    body.price,
+    body.unity,
+    body.stock,
+    body.id,
   ];
 
   databaseTransaction(sql, args);
