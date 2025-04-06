@@ -32,6 +32,10 @@ async function insertCustomer(customer) {
   ];
 
   await databaseTransaction(sql, args);
+
+  const result = await databaseTransaction('SELECT MAX(client_id) FROM client');
+
+  return result[0].max;
 }
 
 async function updateCustomer(customer) {
@@ -49,6 +53,8 @@ async function updateCustomer(customer) {
   ];
 
   await databaseTransaction(sql, args);
+
+  return customer.client_id;
 }
 
 async function deleteCustomer(id) {
