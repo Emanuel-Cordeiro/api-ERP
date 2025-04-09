@@ -2,7 +2,7 @@ const { databaseTransaction } = require('./db');
 
 async function selectCustomers() {
   const sql =
-    'SELECT client_id as id,name, phone, address, district, number, city FROM client ORDER BY client_id';
+    'SELECT client_id,name, phone, address, district, number, city FROM client ORDER BY client_id';
 
   const result = await databaseTransaction(sql);
 
@@ -11,7 +11,7 @@ async function selectCustomers() {
 
 async function selectCustomer(id) {
   const sql =
-    'SELECT client_id as id,name, phone, address, district, number, city FROM client WHERE client_id = $1';
+    'SELECT client_id,name, phone, address, district, number, city FROM client WHERE client_id = $1';
 
   const result = await databaseTransaction(sql, [id]);
 

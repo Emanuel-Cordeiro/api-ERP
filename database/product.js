@@ -30,9 +30,11 @@ async function insertProduct(body) {
     body.cost,
   ];
 
-  databaseTransaction(sql, args);
+  await databaseTransaction(sql, args);
 
-  return;
+  const id = await databaseTransaction('SELECT MAX(product_id) FROM product');
+
+  return id[0].max;
 }
 
 async function updateProduct(body) {
@@ -45,18 +47,18 @@ async function updateProduct(body) {
     body.price,
     body.unity,
     body.stock,
-    body.id,
+    body.product_id,
   ];
 
-  databaseTransaction(sql, args);
+  await databaseTransaction(sql, args);
 
-  return;
+  return body.product_id;
 }
 
 async function deleteProduct(id) {
   const sql = 'DELETE FROM product WHERE product_id = $1';
 
-  databaseTransaction(sql, [id]);
+  await databaseTransaction(sql, [id]);
 
   return;
 }

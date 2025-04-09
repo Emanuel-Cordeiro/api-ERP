@@ -1,8 +1,10 @@
 const { databaseTransaction } = require('./db');
 
 async function selectOrders() {
-  const sql =
-    'SELECT order_id, client_id, delivery_date, observation, paid FROM orders';
+  const sql = `SELECT o.order_id, o.client_id, c.name as client_name, o.delivery_date, o.observation, o.paid 
+    FROM orders o
+    LEFT JOIN client c on c.client_id = o.client_id
+    `;
 
   const result = await databaseTransaction(sql);
 
@@ -28,10 +30,10 @@ async function selectOrders() {
 }
 
 async function selectOrder(id) {
-  let sql = `SELECT o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid 
+  let sql = `SELECT o.order_id, o.client_id, c.name as client_name, o.delivery_date, o.observation, o.paid 
     FROM orders o
     LEFT JOIN client c on c.client_id = o.client_id
-    WHERE order_id = $1`;
+    WHERE o.order_id = $1`;
 
   let result = await databaseTransaction(sql, [id]);
 
@@ -54,29 +56,24 @@ async function insertOrder(body) {
   let sql =
     'INSERT INTO orders (client_id, delivery_date, observation, paid) VALUES ($1, $2, $3, $4)';
 
-  let args = [
-    body[0].client_id,
-    body[0].delivery_date,
-    body[0].observation,
-    body[0].paid,
-  ];
+  let args = [body.client_id, body.delivery_date, body.observation, body.paid];
 
-  databaseTransaction(sql, args);
+  await databaseTransaction(sql, args);
 
   const order_id = await databaseTransaction(
     'SELECT MAX(order_id) FROM orders'
   );
-
-  for (let i = 0; i < body[0].itens.length; i++) {
+  console.log(order_id[0]);
+  for (let i = 0; i < body.itens.length; i++) {
     sql =
       'INSERT INTO order_item (order_id, order_item_order, product_id, quantity, observation) VALUES ($1, $2, $3, $4, $5)';
 
     args = [
       order_id[0].max,
-      body[0].itens[i].order_item_order,
-      body[0].itens[i].product_id,
-      body[0].itens[i].quantity,
-      body[0].itens[i].observation,
+      body.itens[i].order_item_order,
+      body.itens[i].product_id,
+      body.itens[i].quantity,
+      body.itens[i].observation,
     ];
 
     await databaseTransaction(sql, args);
@@ -90,25 +87,25 @@ async function updateOrder(body) {
     'UPDATE orders SET client_id = $1, delivery_date = $2, observation = $3, paid = $4 WHERE order_id = $5';
 
   let args = [
-    body[0].client_id,
-    body[0].delivery_date,
-    body[0].observation,
-    body[0].paid,
-    body[0].order_id,
+    body.client_id,
+    body.delivery_date,
+    body.observation,
+    body.paid,
+    body.order_id,
   ];
 
   await databaseTransaction(sql, args);
 
-  for (let i = 0; i < body[0].itens.length; i++) {
+  for (let i = 0; i < body.itens.length; i++) {
     sql =
       'UPDATE order_item SET order_item_order = $1, product_id = $2, quantity = $3, observation = $4 WHERE order_id = $5';
 
     args = [
-      body[0].itens[i].order_item_order,
-      body[0].itens[i].product_id,
-      body[0].itens[i].quantity,
-      body[0].itens[i].observation,
-      body[0].order_id,
+      body.itens[i].order_item_order,
+      body.itens[i].product_id,
+      body.itens[i].quantity,
+      body.itens[i].observation,
+      body.order_id,
     ];
 
     await databaseTransaction(sql, args);
