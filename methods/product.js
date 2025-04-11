@@ -28,13 +28,18 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    let status = 200;
+    let productId;
+
     if (!!req.body.id) {
-      await db.updateProduct(req.body);
+      productId = await db.updateProduct(req.body);
     } else {
-      await db.insertProduct(req.body);
+      productId = await db.insertProduct(req.body);
+
+      status = 201;
     }
 
-    res.sendStatus(201);
+    res.status(status).json({ retorno: 'Sucesso', id: productId });
   } catch (error) {
     res
       .status(500)

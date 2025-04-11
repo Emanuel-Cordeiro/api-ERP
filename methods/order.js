@@ -26,7 +26,7 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    if (!!req.body[0].order_id) {
+    if (!!req.body.order_id) {
       await db.updateOrder(req.body);
     } else {
       await db.insertOrder(req.body);
@@ -44,7 +44,7 @@ router.delete('/:id', async (req, res) => {
   try {
     await db.deleteOrder(req.params.id);
 
-    res.sendStatus(201);
+    res.sendStatus(200);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao excluir o pedido. Erro: ' + error });
   }

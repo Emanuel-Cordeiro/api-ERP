@@ -30,13 +30,16 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    if (!!req.body.id) {
-      await db.updateIngredient(req.body);
+    let status = 200;
+    let ingredientId;
+
+    if (!!req.body.ingredient_id) {
+      ingredientId = await db.updateIngredient(req.body);
     } else {
-      await db.insertIngredient(req.body);
+      ingredientId = await db.insertIngredient(req.body);
     }
 
-    res.sendStatus(201);
+    res.status(status).json({ retorno: 'Sucesso', id: ingredientId });
   } catch (error) {
     console.log(error);
     res
