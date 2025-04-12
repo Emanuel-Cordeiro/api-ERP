@@ -26,13 +26,17 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    let status = 200;
+    let order_id;
+
     if (!!req.body.order_id) {
-      await db.updateOrder(req.body);
+      order_id = await db.updateOrder(req.body);
     } else {
-      await db.insertOrder(req.body);
+      order_id = await db.insertOrder(req.body);
+      status = 201;
     }
 
-    res.sendStatus(201);
+    res.status(status).json({ retorno: 'Sucesso', id: order_id });
   } catch (error) {
     res
       .status(500)

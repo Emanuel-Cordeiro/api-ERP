@@ -63,10 +63,10 @@ async function insertOrder(body) {
   const order_id = await databaseTransaction(
     'SELECT MAX(order_id) FROM orders'
   );
-  console.log(order_id[0]);
+
   for (let i = 0; i < body.itens.length; i++) {
     sql =
-      'INSERT INTO order_item (order_id, order_item_order, product_id, quantity, observation) VALUES ($1, $2, $3, $4, $5)';
+      'INSERT INTO order_item (order_id, order_item_order, product_id, quantity, observation, price) VALUES ($1, $2, $3, $4, $5, $6)';
 
     args = [
       order_id[0].max,
@@ -74,12 +74,13 @@ async function insertOrder(body) {
       body.itens[i].product_id,
       body.itens[i].quantity,
       body.itens[i].observation,
+      body.itens[i].price,
     ];
 
     await databaseTransaction(sql, args);
   }
 
-  return;
+  return order_id[0].max;
 }
 
 async function updateOrder(body) {
@@ -96,22 +97,27 @@ async function updateOrder(body) {
 
   await databaseTransaction(sql, args);
 
+  await databaseTransaction('DELETE FROM order_item WHERE order_id = $1', [
+    body.order_id,
+  ]);
+
   for (let i = 0; i < body.itens.length; i++) {
     sql =
-      'UPDATE order_item SET order_item_order = $1, product_id = $2, quantity = $3, observation = $4 WHERE order_id = $5';
+      'INSERT INTO order_item (order_id, order_item_order, product_id, quantity, observation, price) VALUES ($1, $2, $3, $4, $5, $6)';
 
     args = [
+      body.order_id,
       body.itens[i].order_item_order,
       body.itens[i].product_id,
       body.itens[i].quantity,
       body.itens[i].observation,
-      body.order_id,
+      body.itens[i].price,
     ];
 
     await databaseTransaction(sql, args);
   }
 
-  return;
+  return body.order_id;
 }
 
 async function deleteOrder(id) {
