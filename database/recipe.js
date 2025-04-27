@@ -2,7 +2,7 @@ const { databaseTransaction } = require('./db');
 
 async function selectRecipes() {
   const sql =
-    'SELECT recipe_id as id, description, cost FROM recipe ORDER BY recipe_id';
+    'SELECT recipe_id, description, cost FROM recipe ORDER BY recipe_id';
 
   const result = await databaseTransaction(sql);
 
@@ -11,13 +11,13 @@ async function selectRecipes() {
 
 async function selectRecipe(id) {
   let sql =
-    'SELECT recipe_id as id, description, cost FROM recipe WHERE recipe_id = $1';
+    'SELECT recipe_id, description, cost FROM recipe WHERE recipe_id = $1';
 
   let result = await databaseTransaction(sql, [id]);
 
   let obj = result[0];
 
-  sql = `SELECT recipe_ingredient.ingredient_id as id, ingredient.description, recipe_ingredient.quantity 
+  sql = `SELECT recipe_ingredient.ingredient_id, ingredient.description, recipe_ingredient.quantity 
     FROM recipe_ingredient 
     LEFT JOIN ingredient ON ingredient.ingredient_id = recipe_ingredient.ingredient_id
     WHERE recipe_id = $1`;
@@ -60,7 +60,7 @@ async function insertRecipe(body) {
 }
 
 async function updateRecipe(body) {
-  const recipeId = body.id;
+  const recipeId = body.recipe_id;
 
   let sql =
     'UPDATE recipe SET description = $1, cost = $2 WHERE recipe_id = $3';
@@ -78,7 +78,7 @@ async function updateRecipe(body) {
     sql =
       'INSERT INTO recipe_ingredient (ingredient_id, quantity, recipe_id) VALUES ($1,$2,$3)';
 
-    args = [body.itens[i].id, body.itens[i].quantity, recipeId];
+    args = [body.itens[i].ingredient_id, body.itens[i].quantity, recipeId];
 
     await databaseTransaction(sql, args);
   }

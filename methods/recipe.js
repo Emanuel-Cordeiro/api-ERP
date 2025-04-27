@@ -28,7 +28,7 @@ router.get('/', async (_, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    if (!!req.body.id) {
+    if (!!req.body.recipe_id) {
       await db.updateRecipe(req.body);
     } else {
       await db.insertRecipe(req.body);
