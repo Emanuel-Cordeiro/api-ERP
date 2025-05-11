@@ -2,7 +2,7 @@ const { databaseTransaction } = require('./db');
 
 async function selectIngredients() {
   const sql =
-    'SELECT ingredient_id, description, unity, cost, stock FROM ingredient';
+    'SELECT ingredient_id, description, unity, cost, stock FROM ingredient ORDER BY ingredient_id';
 
   const result = await databaseTransaction(sql);
 

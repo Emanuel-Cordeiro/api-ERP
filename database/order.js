@@ -1,10 +1,12 @@
 const { databaseTransaction } = require('./db');
 
 async function selectOrders() {
-  const sql = `SELECT o.order_id, o.client_id, c.name as client_name, o.delivery_date, o.observation, o.paid 
+  const sql = `SELECT o.order_id, o.client_id, c.name as client_name, o.delivery_date, o.observation, o.paid, o.delivery,
+    CAST(SUM(oi.price*oi.quantity) AS NUMERIC(10,2)) AS total_value
     FROM orders o
     LEFT JOIN client c on c.client_id = o.client_id
-    `;
+    LEFT JOIN order_item oi ON oi.order_id = o.order_id
+    GROUP BY o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid, o.delivery`;
 
   const result = await databaseTransaction(sql);
 
@@ -14,7 +16,7 @@ async function selectOrders() {
     const order = result[i];
 
     const orderSql =
-      'SELECT order_item_order, product_id, quantity, observation FROM order_item WHERE order_id = $1';
+      'SELECT order_item_order, product_id, quantity, observation, price FROM order_item WHERE order_id = $1';
 
     const itens = await databaseTransaction(orderSql, [order.order_id]);
 
@@ -30,17 +32,22 @@ async function selectOrders() {
 }
 
 async function selectOrder(id) {
-  let sql = `SELECT o.order_id, o.client_id, c.name as client_name, o.delivery_date, o.observation, o.paid 
+  let sql = `SELECT o.order_id, o.client_id, c.name as client_name, o.delivery_date, o.observation, o.paid, o.delivery,
+    CAST(SUM(oi.price*oi.quantity) AS NUMERIC(10,2)) AS total_value
     FROM orders o
-    LEFT JOIN client c on c.client_id = o.client_id
-    WHERE o.order_id = $1`;
+    LEFT JOIN client c ON c.client_id = o.client_id
+    LEFT JOIN order_item oi ON oi.order_id = o.order_id
+    WHERE o.order_id = $1
+    GROUP BY o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid, o.delivery`;
 
   let result = await databaseTransaction(sql, [id]);
 
   let obj = result[0];
 
-  sql =
-    'SELECT order_item_order, product_id, quantity, price, observation FROM order_item WHERE order_id = $1';
+  sql = `SELECT order_item_order, product_id, quantity, price, observation, CAST(SUM(price*quantity) AS NUMERIC(10,2)) AS item_total_value
+    FROM order_item 
+    WHERE order_id = $1
+    GROUP BY order_item_order, product_id, quantity, price, observation`;
 
   itens = await databaseTransaction(sql, [id]);
 
@@ -54,9 +61,15 @@ async function selectOrder(id) {
 
 async function insertOrder(body) {
   let sql =
-    'INSERT INTO orders (client_id, delivery_date, observation, paid) VALUES ($1, $2, $3, $4)';
+    'INSERT INTO orders (client_id, delivery_date, observation, paid, delivery) VALUES ($1, $2, $3, $4, $5)';
 
-  let args = [body.client_id, body.delivery_date, body.observation, body.paid];
+  let args = [
+    body.client_id,
+    body.delivery_date,
+    body.observation,
+    body.paid,
+    body.delivery,
+  ];
 
   await databaseTransaction(sql, args);
 
@@ -85,13 +98,14 @@ async function insertOrder(body) {
 
 async function updateOrder(body) {
   let sql =
-    'UPDATE orders SET client_id = $1, delivery_date = $2, observation = $3, paid = $4 WHERE order_id = $5';
+    'UPDATE orders SET client_id = $1, delivery_date = $2, observation = $3, paid = $4, delivery = $5 WHERE order_id = $6';
 
   let args = [
     body.client_id,
     body.delivery_date,
     body.observation,
     body.paid,
+    body.delivery,
     body.order_id,
   ];
 
