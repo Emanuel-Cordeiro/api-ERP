@@ -8,9 +8,9 @@ router.get('/:id', async (req, res) => {
   try {
     const response = await db.selectOrder(req.params.id);
 
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar o pedido. Erro: ' + error });
+    res.status(400).json({ error: 'Erro ao buscar o pedido. Erro: ' + error });
   }
 });
 
@@ -18,9 +18,9 @@ router.get('/', async (_, res) => {
   try {
     const response = await db.selectOrders();
 
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar os pedido. Erro: ' + error });
+    res.status(400).json({ error: 'Erro ao buscar os pedido. Erro: ' + error });
   }
 });
 
@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
     res.status(status).json({ retorno: 'Sucesso', id: order_id });
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao inserir/alterar o pedido. Erro: ' + error });
   }
 });
@@ -48,9 +48,9 @@ router.delete('/:id', async (req, res) => {
   try {
     await db.deleteOrder(req.params.id);
 
-    res.sendStatus(200);
+    res.sendStatus(204);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao excluir o pedido. Erro: ' + error });
+    res.status(400).json({ error: 'Erro ao excluir o pedido. Erro: ' + error });
   }
 });
 

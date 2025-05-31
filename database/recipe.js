@@ -56,7 +56,7 @@ async function insertRecipe(body) {
     await databaseTransaction(sql, args);
   }
 
-  return;
+  return recipe_id[0].max;
 }
 
 async function updateRecipe(body) {
@@ -83,7 +83,7 @@ async function updateRecipe(body) {
     await databaseTransaction(sql, args);
   }
 
-  return;
+  return recipeId;
 }
 
 async function deleteRecipe(id) {

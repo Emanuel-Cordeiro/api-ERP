@@ -6,24 +6,24 @@ const router = express.Router();
 
 router.get('/:id', async (req, res) => {
   try {
-    const cliente = await db.selectIngredient(req.params.id);
+    const ingredients = await db.selectIngredient(req.params.id);
 
-    res.json(cliente);
+    res.status(200).json(ingredients);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao buscar o ingrediente. Erro: ' + error });
   }
 });
 
 router.get('/', async (_, res) => {
   try {
-    const clientes = await db.selectIngredients();
+    const ingredients = await db.selectIngredients();
 
-    res.json(clientes);
+    res.status(200).json(ingredients);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao buscar os ingredientes. Erro: ' + error });
   }
 });
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.log(error);
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao inserir/alterar o ingrediente. Erro: ' + error });
   }
 });
@@ -52,10 +52,10 @@ router.delete('/:id', async (req, res) => {
   try {
     await db.deleteIngredient(req.params.id);
 
-    res.sendStatus(201);
+    res.sendStatus(204);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao excluir o ingrediente. Erro: ' + error });
   }
 });

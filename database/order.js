@@ -6,7 +6,8 @@ async function selectOrders() {
     FROM orders o
     LEFT JOIN client c on c.client_id = o.client_id
     LEFT JOIN order_item oi ON oi.order_id = o.order_id
-    GROUP BY o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid, o.delivery`;
+    GROUP BY o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid, o.delivery
+    ORDER BY o.order_id`;
 
   const result = await databaseTransaction(sql);
 
@@ -38,7 +39,8 @@ async function selectOrder(id) {
     LEFT JOIN client c ON c.client_id = o.client_id
     LEFT JOIN order_item oi ON oi.order_id = o.order_id
     WHERE o.order_id = $1
-    GROUP BY o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid, o.delivery`;
+    GROUP BY o.order_id, o.client_id, c.name, o.delivery_date, o.observation, o.paid, o.delivery
+    ORDER BY o.order_id`;
 
   let result = await databaseTransaction(sql, [id]);
 

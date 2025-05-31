@@ -6,38 +6,42 @@ const router = express.Router();
 
 router.get('/:id', async (req, res) => {
   try {
-    const cliente = await db.selectRecipe(req.params.id);
+    const recipe = await db.selectRecipe(req.params.id);
 
-    res.json(cliente);
+    res.status(200).json(recipe);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar a receita. Erro: ' + error });
+    res.status(400).json({ error: 'Erro ao buscar a receita. Erro: ' + error });
   }
 });
 
 router.get('/', async (_, res) => {
   try {
-    const clientes = await db.selectRecipes();
+    const recipes = await db.selectRecipes();
 
-    res.json(clientes);
+    res.status(200).json(recipes);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao buscar as receitas. Erro: ' + error });
   }
 });
 
 router.post('/', async (req, res) => {
   try {
+    let status = 200;
+    let recipeId;
+
     if (!!req.body.recipe_id) {
-      await db.updateRecipe(req.body);
+      recipeId = await db.updateRecipe(req.body);
     } else {
-      await db.insertRecipe(req.body);
+      status = 201;
+      recipeId = await db.insertRecipe(req.body);
     }
 
-    res.sendStatus(201);
+    res.status(status).json({ retorno: 'Sucesso', id: recipeId });
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao incluir/alterar a receita. Erro: ' + error });
   }
 });
@@ -46,10 +50,10 @@ router.delete('/:id', async (req, res) => {
   try {
     await db.deleteRecipe(req.params.id);
 
-    res.sendStatus(201);
+    res.sendStatus(204);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao excluir a receita. Erro: ' + error });
   }
 });

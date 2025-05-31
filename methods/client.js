@@ -6,22 +6,22 @@ const router = express.Router();
 
 router.get('/:id', async (req, res) => {
   try {
-    const cliente = await db.selectCustomer(req.params.id);
+    const client = await db.selectCustomer(req.params.id);
 
-    res.json(cliente);
+    res.status(200).json(client);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar o cliente. Erro: ' + error });
+    res.status(400).json({ error: 'Erro ao buscar o cliente. Erro: ' + error });
   }
 });
 
 router.get('/', async (_, res) => {
   try {
-    const clientes = await db.selectCustomers();
+    const clients = await db.selectCustomers();
 
-    res.json(clientes);
+    res.status(200).json(clients);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao buscar os clientes. Erro: ' + error });
   }
 });
@@ -42,7 +42,7 @@ router.post('/', async (req, res) => {
     res.status(status).json({ retorno: 'Sucesso', id: client_id });
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao incluir/alterar o cliente. Erro: ' + error });
   }
 });
@@ -51,10 +51,10 @@ router.delete('/:id', async (req, res) => {
   try {
     await db.deleteCustomer(req.params.id);
 
-    res.sendStatus(200);
+    res.sendStatus(204);
   } catch (error) {
     res
-      .status(500)
+      .status(400)
       .json({ error: 'Erro ao excluir o cliente. Erro: ' + error });
   }
 });
