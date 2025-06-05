@@ -2,7 +2,7 @@ const { databaseTransaction } = require('./db');
 
 async function selectIngredients() {
   const sql =
-    'SELECT ingredient_id as id, description, unity, cost, stock FROM ingredient';
+    'SELECT ingredient_id, description, unity, cost, stock FROM ingredient ORDER BY ingredient_id';
 
   const result = await databaseTransaction(sql);
 
@@ -11,7 +11,7 @@ async function selectIngredients() {
 
 async function selectIngredient(id) {
   const sql =
-    'SELECT ingredient_id as id, description, unity, cost, stock  FROM ingredient WHERE ingredient_id = $1';
+    'SELECT ingredient_id, description, unity, cost, stock  FROM ingredient WHERE ingredient_id = $1';
 
   const result = await databaseTransaction(sql, [id]);
 
@@ -31,7 +31,11 @@ async function insertIngredient(ingredient) {
 
   await databaseTransaction(sql, args);
 
-  return;
+  const id = await databaseTransaction(
+    'SELECT MAX(ingredient_id) FROM ingredient'
+  );
+
+  return id[0].max;
 }
 
 async function updateIngredient(ingredient) {
@@ -43,12 +47,12 @@ async function updateIngredient(ingredient) {
     ingredient.unity,
     ingredient.cost,
     ingredient.stock,
-    ingredient.id,
+    ingredient.ingredient_id,
   ];
 
   await databaseTransaction(sql, args);
 
-  return;
+  return ingredient.ingredient_id;
 }
 
 async function deleteIngredient(id) {

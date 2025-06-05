@@ -1,8 +1,10 @@
 const { databaseTransaction } = require('./db');
 
 async function selectProducts() {
-  const sql =
-    'SELECT product_id as id, description, price, unity, stock, cost FROM product ORDER BY product_id';
+  const sql = `SELECT p.product_id, p.description, p.price, p.unity, p.stock, p.cost, p.recipe_id, r.description as recipe_description
+    FROM product p
+    LEFT JOIN recipe r ON r.recipe_id = p.recipe_id
+    ORDER BY product_id`;
 
   const result = await databaseTransaction(sql);
 
@@ -10,8 +12,11 @@ async function selectProducts() {
 }
 
 async function selectProduct(id) {
-  const sql =
-    'SELECT product_id as id, description, price, unity, stock, cost FROM product WHERE product_id = $1';
+  const sql = `SELECT p.product_id, p.description, p.price, p.unity, p.stock, p.cost, p.recipe_id, r.description as recipe_description
+    FROM product p
+    LEFT JOIN recipe r ON r.recipe_id = p.recipe_id
+    WHERE product_id = $1
+    ORDER BY product_id`;
 
   const result = await databaseTransaction(sql, [id]);
 
@@ -20,7 +25,7 @@ async function selectProduct(id) {
 
 async function insertProduct(body) {
   const sql =
-    'INSERT INTO product (description, price, unity, stock, cost) VALUES ($1, $2, $3, $4, $5)';
+    'INSERT INTO product (description, price, unity, stock, cost, recipe_id) VALUES ($1, $2, $3, $4, $5, $6)';
 
   const args = [
     body.description,
@@ -28,16 +33,19 @@ async function insertProduct(body) {
     body.unity,
     body.stock,
     body.cost,
+    body.recipe_id,
   ];
 
-  databaseTransaction(sql, args);
+  await databaseTransaction(sql, args);
 
-  return;
+  const id = await databaseTransaction('SELECT MAX(product_id) FROM product');
+
+  return id[0].max;
 }
 
 async function updateProduct(body) {
   const sql =
-    'UPDATE product SET description = $1, cost = $2, price = $3, unity = $4, stock = $5 WHERE product_id = $6';
+    'UPDATE product SET description = $1, cost = $2, price = $3, unity = $4, stock = $5, recipe_id = $6 WHERE product_id = $7';
 
   const args = [
     body.description,
@@ -45,18 +53,19 @@ async function updateProduct(body) {
     body.price,
     body.unity,
     body.stock,
-    body.id,
+    body.recipe_id,
+    body.product_id,
   ];
 
-  databaseTransaction(sql, args);
+  await databaseTransaction(sql, args);
 
-  return;
+  return body.product_id;
 }
 
 async function deleteProduct(id) {
   const sql = 'DELETE FROM product WHERE product_id = $1';
 
-  databaseTransaction(sql, [id]);
+  await databaseTransaction(sql, [id]);
 
   return;
 }

@@ -2,7 +2,7 @@ const { databaseTransaction } = require('./db');
 
 async function selectCustomers() {
   const sql =
-    'SELECT client_id as id,name, phone, address, district, number, city FROM client ORDER BY client_id';
+    'SELECT client_id,name, phone, address, district, number, city FROM client ORDER BY client_id';
 
   const result = await databaseTransaction(sql);
 
@@ -11,7 +11,7 @@ async function selectCustomers() {
 
 async function selectCustomer(id) {
   const sql =
-    'SELECT client_id as id,name, phone, address, district, number, city FROM client WHERE client_id = $1';
+    'SELECT client_id,name, phone, address, district, number, city FROM client WHERE client_id = $1';
 
   const result = await databaseTransaction(sql, [id]);
 
@@ -32,6 +32,10 @@ async function insertCustomer(customer) {
   ];
 
   await databaseTransaction(sql, args);
+
+  const result = await databaseTransaction('SELECT MAX(client_id) FROM client');
+
+  return result[0].max;
 }
 
 async function updateCustomer(customer) {
@@ -49,10 +53,20 @@ async function updateCustomer(customer) {
   ];
 
   await databaseTransaction(sql, args);
+
+  return customer.client_id;
 }
 
 async function deleteCustomer(id) {
-  const sql = 'DELETE FROM client WHERE client_id = $1';
+  let sql = 'SELECT DISTINCT 1 FROM orders WHERE client_id = $1';
+
+  const res = await databaseTransaction(sql, [id]);
+
+  if (res[0]) {
+    throw new Error('Cliente já possui pedidos, não pode ser excluído.');
+  }
+
+  sql = 'DELETE FROM client WHERE client_id = $1';
 
   await databaseTransaction(sql, [id]);
 
