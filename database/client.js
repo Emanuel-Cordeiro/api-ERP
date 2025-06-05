@@ -58,7 +58,15 @@ async function updateCustomer(customer) {
 }
 
 async function deleteCustomer(id) {
-  const sql = 'DELETE FROM client WHERE client_id = $1';
+  let sql = 'SELECT DISTINCT 1 FROM orders WHERE client_id = $1';
+
+  const res = await databaseTransaction(sql, [id]);
+
+  if (res[0]) {
+    throw new Error('Cliente já possui pedidos, não pode ser excluído.');
+  }
+
+  sql = 'DELETE FROM client WHERE client_id = $1';
 
   await databaseTransaction(sql, [id]);
 

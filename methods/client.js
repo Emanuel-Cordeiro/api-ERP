@@ -10,7 +10,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json(client);
   } catch (error) {
-    res.status(400).json({ error: 'Erro ao buscar o cliente. Erro: ' + error });
+    res.status(400).json({ message: 'Erro ao buscar o cliente', error });
   }
 });
 
@@ -55,7 +55,7 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .json({ error: 'Erro ao excluir o cliente. Erro: ' + error });
+      .json({ message: 'Erro ao excluir o cliente.', error: error.message });
   }
 });
 
