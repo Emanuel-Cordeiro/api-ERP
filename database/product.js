@@ -24,7 +24,15 @@ async function selectProduct(id) {
 }
 
 async function insertProduct(body) {
-  const sql =
+  const recipeId = body.recipe_id === '' ? 0 : body.recipe_id;
+
+  let sql = 'SELECT cost FROM recipe WHERE recipe_id = $1';
+
+  const result = await databaseTransaction(sql, [recipeId]);
+
+  const recipeCost = result[0] ? result[0].cost : 0;
+
+  sql =
     'INSERT INTO product (description, price, unity, stock, cost, recipe_id) VALUES ($1, $2, $3, $4, $5, $6)';
 
   const args = [
@@ -32,8 +40,8 @@ async function insertProduct(body) {
     body.price,
     body.unity,
     body.stock,
-    body.cost,
-    body.recipe_id,
+    recipeCost,
+    recipeId,
   ];
 
   await databaseTransaction(sql, args);
@@ -44,16 +52,24 @@ async function insertProduct(body) {
 }
 
 async function updateProduct(body) {
-  const sql =
+  const recipeId = body.recipe_id === '' ? 0 : body.recipe_id;
+
+  let sql = 'SELECT cost FROM recipe WHERE recipe_id = $1';
+
+  const result = await databaseTransaction(sql, [recipeId]);
+
+  const recipeCost = result[0] ? result[0].cost : 0;
+
+  sql =
     'UPDATE product SET description = $1, cost = $2, price = $3, unity = $4, stock = $5, recipe_id = $6 WHERE product_id = $7';
 
   const args = [
     body.description,
-    body.cost,
+    recipeCost,
     body.price,
     body.unity,
     body.stock,
-    body.recipe_id,
+    recipeId,
     body.product_id,
   ];
 

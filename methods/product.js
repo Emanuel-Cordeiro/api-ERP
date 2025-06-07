@@ -10,7 +10,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json(cliente);
   } catch (error) {
-    res.status(400).json({ error: 'Erro ao buscar o produto. Erro: ' + error });
+    res.status(400).json({ message: 'Erro ao buscar o produto.', error });
   }
 });
 
@@ -20,9 +20,7 @@ router.get('/', async (_, res) => {
 
     res.status(200).json(clientes);
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: 'Erro ao buscar os produtos. Erro: ' + error });
+    res.status(400).json({ message: 'Erro ao buscar os produtos.', error });
   }
 });
 
@@ -43,7 +41,7 @@ router.post('/', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .json({ error: 'Erro ao inserir/alterar o produto. Erro: ' + error });
+      .json({ error: 'Erro ao incluir/alterar o produto.', error });
   }
 });
 
@@ -55,7 +53,7 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .json({ error: 'Erro ao excluir o produto. Erro: ' + error });
+      .json({ message: 'Erro ao excluir o produto.', error: error.message });
   }
 });
 
