@@ -10,7 +10,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json(client);
   } catch (error) {
-    res.status(400).json({ message: 'Erro ao buscar o cliente', error });
+    res.status(400).json({ message: 'Erro ao buscar o cliente.', error });
   }
 });
 
@@ -20,9 +20,7 @@ router.get('/', async (_, res) => {
 
     res.status(200).json(clients);
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: 'Erro ao buscar os clientes. Erro: ' + error });
+    res.status(400).json({ message: 'Erro ao buscar os clientes.', error });
   }
 });
 
@@ -43,7 +41,7 @@ router.post('/', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .json({ error: 'Erro ao incluir/alterar o cliente. Erro: ' + error });
+      .json({ error: 'Erro ao incluir/alterar o cliente.', error });
   }
 });
 

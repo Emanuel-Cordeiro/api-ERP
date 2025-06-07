@@ -87,7 +87,17 @@ async function updateRecipe(body) {
 }
 
 async function deleteRecipe(id) {
-  let sql = 'DELETE FROM recipe WHERE recipe_id = $1';
+  let sql = 'SELECT DISTINCT 1 FROM product WHERE recipe_id = $1';
+
+  const res = await databaseTransaction(sql, [id]);
+  console.log(res[0]);
+  if (res[0]) {
+    throw new Error(
+      'Receita já está vinculada à um produto, não pode ser excluída.'
+    );
+  }
+
+  sql = 'DELETE FROM recipe WHERE recipe_id = $1';
 
   await databaseTransaction(sql, [id]);
 

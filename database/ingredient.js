@@ -56,7 +56,15 @@ async function updateIngredient(ingredient) {
 }
 
 async function deleteIngredient(id) {
-  const sql = 'DELETE FROM ingredient WHERE ingredient_id = $1';
+  let sql = 'SELECT DISTINCT 1 FROM recipe_ingredient WHERE ingredient_id = $1';
+
+  const res = await databaseTransaction(sql, [id]);
+
+  if (res[0]) {
+    throw new Error('Ingrediente já está em receitas e não pode ser excluído.');
+  }
+
+  sql = 'DELETE FROM ingredient WHERE ingredient_id = $1';
 
   await databaseTransaction(sql, [id]);
 

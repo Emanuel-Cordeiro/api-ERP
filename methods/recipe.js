@@ -10,7 +10,7 @@ router.get('/:id', async (req, res) => {
 
     res.status(200).json(recipe);
   } catch (error) {
-    res.status(400).json({ error: 'Erro ao buscar a receita. Erro: ' + error });
+    res.status(400).json({ message: 'Erro ao buscar a receita', error });
   }
 });
 
@@ -20,9 +20,7 @@ router.get('/', async (_, res) => {
 
     res.status(200).json(recipes);
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: 'Erro ao buscar as receitas. Erro: ' + error });
+    res.status(400).json({ message: 'Erro ao buscar as receitas', error });
   }
 });
 
@@ -42,7 +40,7 @@ router.post('/', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .json({ error: 'Erro ao incluir/alterar a receita. Erro: ' + error });
+      .json({ error: 'Erro ao incluir/alterar a receita.', error });
   }
 });
 
@@ -54,7 +52,7 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .json({ error: 'Erro ao excluir a receita. Erro: ' + error });
+      .json({ message: 'Erro ao excluir a receita.', error: error.message });
   }
 });
 
